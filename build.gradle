@@ -24,7 +24,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testCompile 'io.projectreactor:reactor-test'
+	testImplementation 'io.projectreactor:reactor-test'
 	implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 	implementation 'org.webjars:bootstrap:3.3.7-1'
 	compileOnly 'org.projectlombok:lombok'
