@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Document
+@Document(collection = "categories")
 public class Category {
 	
     @Id

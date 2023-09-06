@@ -1,7 +1,6 @@
 package com.mlorenzo.spring5reactivemongorecipeapp.commands;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
@@ -12,15 +11,18 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class RecipeCommand {
     private String id;
 
-    @NotBlank
+    // Nota: Los mensajes de validación del archivo de propiedades "messages.properties" tienen preferencia sobre aquellos que se
+    // pongan en estas anotaciones de validación mediante el atributo "message"
+    @NotBlank(message = "Description is required")
     @Size(min = 3, max = 255)
     private String description;
 
@@ -44,9 +46,10 @@ public class RecipeCommand {
     @NotBlank
     private String directions;
 
+    // En este caso usamos una colección de tipo List en vez de Set para poder realizar la conexión con la plantilla "recipeForm"
     private List<IngredientCommand> ingredients = new ArrayList<>();
-    private Byte[] image;
+    private byte[] image;
     private Difficulty difficulty;
-    private NotesCommand notes;
-    private List<CategoryCommand> categories = new ArrayList<>();
+    private String notes;
+    private Set<CategoryCommand> categories = new HashSet<>();
 }

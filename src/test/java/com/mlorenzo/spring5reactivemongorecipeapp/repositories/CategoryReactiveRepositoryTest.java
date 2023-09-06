@@ -11,6 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mlorenzo.spring5reactivemongorecipeapp.domain.Category;
 
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 @RunWith(SpringRunner.class)
 @DataMongoTest
 public class CategoryReactiveRepositoryTest {
@@ -27,18 +30,23 @@ public class CategoryReactiveRepositoryTest {
 	public void testCategorySave() throws Exception{
 		Category category = new Category();
 		category.setDescription("Spanish");
-		categoryReactiveReporsitory.save(category).block();
-		Long count = categoryReactiveReporsitory.count().block();
-		assertEquals(Long.valueOf(1L),count);
+		Mono<Long> countMono = categoryReactiveReporsitory.save(category)
+				.then(categoryReactiveReporsitory.count());
+		StepVerifier.create(countMono)
+			.expectNext(1L)
+			.verifyComplete();
 	}
 	
 	@Test
 	public void testfindByDescription() throws Exception{
+		String description = "Mexican";
 		Category category = new Category();
-		category.setDescription("Mexican");
-		categoryReactiveReporsitory.save(category).block();
-		Category fetchedCat = categoryReactiveReporsitory.findByDescription("Mexican").block();
-		assertNotNull(fetchedCat.getId());
+		category.setDescription(description);
+		Mono<Category> categoryMono = categoryReactiveReporsitory.save(category)
+				.then(categoryReactiveReporsitory.findByDescription(description));
+		StepVerifier.create(categoryMono)
+			.assertNext(cat -> assertNotNull(cat.getId()))
+			.verifyComplete();
 	}
 
 }

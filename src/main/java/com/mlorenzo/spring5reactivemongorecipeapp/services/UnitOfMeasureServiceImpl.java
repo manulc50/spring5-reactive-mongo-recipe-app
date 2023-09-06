@@ -8,15 +8,13 @@ import com.mlorenzo.spring5reactivemongorecipeapp.commands.UnitOfMeasureCommand;
 import com.mlorenzo.spring5reactivemongorecipeapp.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import com.mlorenzo.spring5reactivemongorecipeapp.repositories.UnitOfMeasureReactiveRepository;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
     private final UnitOfMeasureReactiveRepository unitOfMeasureRepositoryReactive;
     private final UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand;
-
-    public UnitOfMeasureServiceImpl(UnitOfMeasureReactiveRepository unitOfMeasureRepositoryReactive, UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand) {
-        this.unitOfMeasureRepositoryReactive = unitOfMeasureRepositoryReactive;
-        this.unitOfMeasureToUnitOfMeasureCommand = unitOfMeasureToUnitOfMeasureCommand;
-    }
 
 	@Override
 	public Flux<UnitOfMeasureCommand> listAllUoms() {

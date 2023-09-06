@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import com.mlorenzo.spring5reactivemongorecipeapp.domain.Recipe;
+import com.mlorenzo.spring5reactivemongorecipeapp.commands.RecipeCommand;
 import com.mlorenzo.spring5reactivemongorecipeapp.services.RecipeService;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
@@ -21,6 +21,6 @@ public class WebConfig {
 		return RouterFunctions.route(GET("/api/recipes"),
 				serverRequest -> ServerResponse.ok()
 									.contentType(MediaType.APPLICATION_JSON)
-									.body(recipeService.getRecipes(),Recipe.class));
+									.body(recipeService.getRecipes(),RecipeCommand.class));
 	}
 }

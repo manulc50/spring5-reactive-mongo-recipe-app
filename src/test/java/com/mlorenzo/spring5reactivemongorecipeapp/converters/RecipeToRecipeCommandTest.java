@@ -22,7 +22,7 @@ public class RecipeToRecipeCommandTest {
     public static final String CAT_ID2 = "2";
     public static final String INGRED_ID_1 = "3";
     public static final String INGRED_ID_2 = "4";
-    public static final String NOTES_ID = "9";
+    public static final String NOTES = "My Notes";
     
     RecipeToRecipeCommand converter;
 
@@ -30,8 +30,7 @@ public class RecipeToRecipeCommandTest {
     public void setUp() throws Exception {
         converter = new RecipeToRecipeCommand(
                 new CategoryToCategoryCommand(),
-                new IngredientToIngredientCommand(new UnitOfMeasureToUnitOfMeasureCommand()),
-                new NotesToNotesCommand());
+                new IngredientToIngredientCommand(new UnitOfMeasureToUnitOfMeasureCommand()));
     }
 
     @Test
@@ -57,9 +56,7 @@ public class RecipeToRecipeCommandTest {
         recipe.setServings(SERVINGS);
         recipe.setSource(SOURCE);
         recipe.setUrl(URL);
-        Notes notes = new Notes();
-        notes.setId(NOTES_ID);
-        recipe.setNotes(notes);
+        recipe.setNotes(NOTES);
         Category category = new Category();
         category.setId(CAT_ID_1);
         Category category2 = new Category();
@@ -85,7 +82,7 @@ public class RecipeToRecipeCommandTest {
         assertEquals(SERVINGS, command.getServings());
         assertEquals(SOURCE, command.getSource());
         assertEquals(URL, command.getUrl());
-        assertEquals(NOTES_ID, command.getNotes().getId());
+        assertEquals(NOTES, recipe.getNotes());
         assertEquals(2, command.getCategories().size());
         assertEquals(2, command.getIngredients().size());
     }

@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
+import com.mlorenzo.spring5reactivemongorecipeapp.commands.RecipeCommand;
 import com.mlorenzo.spring5reactivemongorecipeapp.config.WebConfig;
 import com.mlorenzo.spring5reactivemongorecipeapp.domain.Recipe;
 import com.mlorenzo.spring5reactivemongorecipeapp.services.RecipeService;
@@ -17,10 +18,10 @@ import com.mlorenzo.spring5reactivemongorecipeapp.services.RecipeService;
 import reactor.core.publisher.Flux;
 
 public class RouterFunctionTest {
-	WebTestClient webTestClient;
-	
 	@Mock
 	RecipeService recipeService;
+	
+	WebTestClient webTestClient;
 	
 	@Before
 	public void setUp() throws Exception{
@@ -41,7 +42,7 @@ public class RouterFunctionTest {
 	
 	@Test
 	public void testGetRecipesWithData() throws Exception{
-		when(recipeService.getRecipes()).thenReturn(Flux.just(new Recipe()));
+		when(recipeService.getRecipes()).thenReturn(Flux.just(new RecipeCommand()));
 		webTestClient.get().uri("/api/recipes")
 			.accept(MediaType.APPLICATION_JSON)
 			.exchange()

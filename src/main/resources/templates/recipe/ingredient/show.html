@@ -1,59 +1,67 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <title>View Ingredient</title>
+	<meta charset="UTF-8">
+	<title>View Ingredient</title>
+	
+	<!-- Bootstrap CDN(CSS) obtenido de su web official -->
+	<!-- Añadimos el atributo "href" de Thymeleaf para sobrescribir los estilos de Bootstrap del CDN por los estilos de Bootstrap del WebJar -->
+	<!-- De esta manera, si ejecuto o visualizo este HTML directamente sin Spring BooT, se usará el CSS del CDN. Sin embargo, si arrancamos esta aplicación Spring Boot, se usará Thymeleaf con el CSS del WebJar -->
+	<!-- Nota: Usar la misma versión de CDN y WebJar para evitar errores de integridad -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
+		  th:href="@{/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css}">
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
-          th:href="@{/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css}">
+	<!-- Para usar el JS de JQuery del WebJar -->
+	<script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
 
-    <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous" th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
+	<!-- Bootstrap CDN(JS) obtenido de su web official -->
+	<!-- Añadimos el atributo "href" de Thymeleaf para sobrescribir el JS de Bootstrap del CDN por el JS de Bootstrap del WebJar -->
+	<!-- De esta manera, si ejecuto o visualizo este HTML directamente sin Spring BooT, se usará el JS del CDN.Sin embargo, si arrancamos esta aplicación Spring Boot, se usará Thymeleaf con el JS del WebJar -->
+	<!-- Nota: Usar la misma versión de CDN y WebJar para evitar errores de integridad -->
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+	        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"
+	        th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
 </head>
 <body>
-<!--/*@thymesVar id="ingredient" type="com.mlorenzo.spring5reactivemongorecipeapp.commands.IngredientCommand"*/-->
-<div class="container-fluid" style="margin-top: 20px">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="panel panel-primary">
-
-                <div class="panel-heading">
-                    <h1 class="panel-title">Ingredient</h1>
-                </div>
-                <div class="panel-body">
-
-                    <div class="table-responsive">
-                        <table class="table table-hover ">
-                            <thead class="thead-inverse">
-                            <tr>
-                                <th>ID</th>
-                                <th>Description</th>
-                            </tr>
-                            </thead>
-                            <tr th:remove="all">
-                                <td>12333</td>
-                                <td>Tasty Goodnees 2</td>
-                                <td><a href="#">View</a></td>
-                                <td><a href="#">Update</a></td>
-                                <td><a href="#">Delete</a></td>
-                            </tr>
-                            <tr>
-                                <td th:text="${ingredient.id}">334</td>
-                                <td th:text="${ingredient.amount} + ' ' + ${ingredient.uom.getDescription()} + ' ' + ${ingredient.description}">Tasty Goodnees 3</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+	<!--/*@thymesVar id="ingredient" type="com.mlorenzo.spring5reactivemongorecipeapp.commands.IngredientCommand"*/-->
+	<div class="container-fluid" style="margin-top: 20px">
+	    <div class="row">
+	        <div class="col-md-6 col-md-offset-3">
+	            <div class="panel panel-primary">
+	
+	                <div class="panel-heading">
+	                    <h1 class="panel-title">Ingredient</h1>
+	                </div>
+	                <div class="panel-body">
+	
+	                    <div class="table-responsive">
+	                        <table class="table table-hover ">
+	                            <thead class="thead-inverse">
+	                            <tr>
+	                                <th>ID</th>
+	                                <th>Description</th>
+	                            </tr>
+	                            </thead>
+	                            <!-- La primera línea usa el atributo "remove" de Thymeleaf con valor "all" para eliminar dichar línea cuando se arranque esta aplicación Spring Boot junto con Thymeleaf, es decir, los atributos de Thymeleaf sobrescriben a los atributos normales de HTML -->
+	       						<!-- Esta primera línea son datos de prueba que sólo se muestran cuando se ejecuta o se visualiza este HTML directamente en el navegador sin arrancar la aplicación Spring Boot -->
+	                            <tr th:remove="all">
+	                                <td>12333</td>
+	                                <td>Tasty Goodnees 2</td>
+	                            </tr>
+	                            <tr>
+	                                <td th:text="${ingredient.id}">334</td>
+	                                <td th:text="${ingredient.amount} + ' ' + ${ingredient.uom.description} + ' of ' + ${ingredient.description}">Tasty Goodnees 3</td>
+	                            </tr>
+	                        </table>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 
 </body>
 </html>

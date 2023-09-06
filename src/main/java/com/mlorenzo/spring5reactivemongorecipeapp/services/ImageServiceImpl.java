@@ -1,45 +1,38 @@
 package com.mlorenzo.spring5reactivemongorecipeapp.services;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
+import com.mlorenzo.spring5reactivemongorecipeapp.exceptions.NotFoundException;
 import com.mlorenzo.spring5reactivemongorecipeapp.domain.Recipe;
 import com.mlorenzo.spring5reactivemongorecipeapp.repositories.RecipeReactiveRepository;
 
-import java.io.IOException;
-
-@Slf4j
+@RequiredArgsConstructor
 @Service
 public class ImageServiceImpl implements ImageService {
     private final RecipeReactiveRepository recipeReactiveRepository;
 
-    public ImageServiceImpl(RecipeReactiveRepository recipeReactiveRepository) {
-        this.recipeReactiveRepository = recipeReactiveRepository;
-    }
-
 	@Override
-	public Mono<Void> saveImageFile(String recipeId, MultipartFile file) {
-		Mono<Recipe> recipeMono = recipeReactiveRepository.findById(recipeId)
-			.map(recipe -> {
-				try {
-					Byte[] byteObjects = new Byte[file.getBytes().length];
-		            int i = 0;
-		            for (byte b : file.getBytes()){
-		                byteObjects[i++] = b;
-		            }
-		            recipe.setImage(byteObjects);
-		            return recipe;
-				}
-				catch (IOException e) {
-		            log.error("Error occurred", e);
-		            throw new RuntimeException(e);
-		        }
-			});
-			
-		recipeReactiveRepository.save(recipeMono.block()).block();
-		return Mono.empty();
+	public Mono<Void> saveImageFile(String recipeId, FilePart file) {
+		return Mono.zip(recipeReactiveRepository.findById(recipeId),
+				DataBufferUtils.join(file.content()).map(dataBuffer -> dataBuffer.asByteBuffer().array()))
+			.flatMap(tuple -> {
+				Recipe recipe = tuple.getT1();
+				byte[] fileBytes = tuple.getT2();
+				recipe.setImage(fileBytes);
+	            return recipeReactiveRepository.save(recipe);
+			})
+			.then();
+	}
+	
+	@Override
+	public Mono<byte[]> getImage(String recipeId) {
+		return recipeReactiveRepository.findById(recipeId)
+				.switchIfEmpty(Mono.error(new NotFoundException("Recipe Not Found for id value: " + recipeId)))
+				.flatMap(recipe -> recipe.getImage() != null ? Mono.just(recipe.getImage()) : Mono.empty());
 	}
 }

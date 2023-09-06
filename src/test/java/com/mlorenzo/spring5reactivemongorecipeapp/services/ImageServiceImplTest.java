@@ -1,18 +1,28 @@
 package com.mlorenzo.spring5reactivemongorecipeapp.services;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.codec.multipart.FilePart;
 
 import com.mlorenzo.spring5reactivemongorecipeapp.domain.Recipe;
 import com.mlorenzo.spring5reactivemongorecipeapp.repositories.RecipeReactiveRepository;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,22 +42,56 @@ public class ImageServiceImplTest {
     
     @Test
     public void testSaveImageFile() throws Exception {
-        //given
-        String id = "1";
-        MultipartFile multipartFile = new MockMultipartFile("imagefile", "testing.txt", "text/plain",
-                "Spring Framework Guru".getBytes());
+    	//given
+    	byte[] imageBytes = "fake image text".getBytes(StandardCharsets.UTF_8);
+    	FilePart filePart = new FilePart() {
+			
+			@Override
+			public String name() {
+				return "imagefile";
+			}
+			
+			@Override
+			public HttpHeaders headers() {
+				return HttpHeaders.EMPTY;
+			}
+			
+			@Override
+			public Flux<DataBuffer> content() {
+				 return DataBufferUtils.read(
+	                        new ByteArrayResource(imageBytes),
+	                        	new DefaultDataBufferFactory(), 1024);
+			}
+			
+			@Override
+			public Mono<Void> transferTo(Path dest) {
+				return Mono.empty();
+			}
+			
+			@Override
+			public String filename() {
+				return "testing.jpg";
+			}
+		};
+    	String id = "1";
         Recipe recipe = new Recipe();
         recipe.setId(id);
-        Mono<Recipe> recipeMono = Mono.just(recipe);
-        when(recipeReactiveRepository.findById(anyString())).thenReturn(recipeMono);
-        when(recipeReactiveRepository.save(any(Recipe.class))).thenReturn(recipeMono);
+        Recipe savedRecipe = new Recipe();
+        savedRecipe.setId(recipe.getId());
+        savedRecipe.setImage(imageBytes);
         ArgumentCaptor<Recipe> argumentCaptor = ArgumentCaptor.forClass(Recipe.class);
+        when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
+        when(recipeReactiveRepository.save(any(Recipe.class))).thenReturn(Mono.just(savedRecipe));
         //when
-        imageService.saveImageFile(id, multipartFile);
-        //then
+        StepVerifier.create(imageService.saveImageFile(id, filePart))
+        	//then
+        	.expectSubscription()
+        	.expectComplete()
+        	.verify();
         verify(recipeReactiveRepository, times(1)).save(argumentCaptor.capture());
-        Recipe savedRecipe = argumentCaptor.getValue();
-        assertEquals(multipartFile.getBytes().length, savedRecipe.getImage().length);
+        Recipe recipeCaptor = argumentCaptor.getValue();
+        assertEquals(savedRecipe.getImage().length, recipeCaptor.getImage().length);
+        
     }
 
 }

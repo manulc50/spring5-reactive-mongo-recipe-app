@@ -5,10 +5,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mlorenzo.spring5reactivemongorecipeapp.commands.RecipeCommand;
-import com.mlorenzo.spring5reactivemongorecipeapp.converters.RecipeCommandToRecipe;
 import com.mlorenzo.spring5reactivemongorecipeapp.converters.RecipeToRecipeCommand;
 import com.mlorenzo.spring5reactivemongorecipeapp.domain.Recipe;
 import com.mlorenzo.spring5reactivemongorecipeapp.repositories.RecipeReactiveRepository;
+
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,24 +29,30 @@ public class RecipeServiceIT {
     RecipeReactiveRepository recipeReactiveRepository;
 
     @Autowired
-    RecipeCommandToRecipe recipeCommandToRecipe;
-
-    @Autowired
     RecipeToRecipeCommand recipeToRecipeCommand;
 
     @Test
     public void testSaveOfDescription() throws Exception {
-        //given
-        Iterable<Recipe> recipes = recipeReactiveRepository.findAll().collectList().block();
-        Recipe testRecipe = recipes.iterator().next();
-        RecipeCommand testRecipeCommand = recipeToRecipeCommand.convert(testRecipe);
-        //when
-        testRecipeCommand.setDescription(NEW_DESCRIPTION);
-        RecipeCommand savedRecipeCommand = recipeService.saveRecipeCommand(testRecipeCommand).block();
-        //then
-        assertEquals(NEW_DESCRIPTION, savedRecipeCommand.getDescription());
-        assertEquals(testRecipe.getId(), savedRecipeCommand.getId());
-        assertEquals(testRecipe.getCategories().size(), savedRecipeCommand.getCategories().size());
-        assertEquals(testRecipe.getIngredients().size(), savedRecipeCommand.getIngredients().size());
+    	//given
+    	Mono<Recipe> recipeMono = recipeReactiveRepository.findAll().next();
+    	Mono<RecipeCommand> savedRecipeCommandMono = recipeMono.map(recipe -> {
+    				RecipeCommand recipeCommand = recipeToRecipeCommand.convert(recipe);
+    				recipeCommand.setDescription(NEW_DESCRIPTION);
+    				return recipeCommand;
+    			})
+    			.flatMap(recipeCommand -> recipeService.saveRecipeCommand(recipeCommand));
+    	//when
+    	StepVerifier.create(Mono.zip(recipeMono, savedRecipeCommandMono))
+    			.expectSubscription()
+    			//then
+    			.assertNext(tuple -> {
+    				Recipe recipe = tuple.getT1();
+    				RecipeCommand savedRecipeCommand = tuple.getT2();
+    				assertEquals(NEW_DESCRIPTION, savedRecipeCommand.getDescription());
+    		        assertEquals(recipe.getId(), savedRecipeCommand.getId());
+    		        assertEquals(recipe.getCategories().size(), savedRecipeCommand.getCategories().size());
+    		        assertEquals(recipe.getIngredients().size(), savedRecipeCommand.getIngredients().size());
+    			})
+    			.verifyComplete();
     }
 }

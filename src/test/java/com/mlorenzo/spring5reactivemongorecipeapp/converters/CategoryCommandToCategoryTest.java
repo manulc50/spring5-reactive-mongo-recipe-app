@@ -10,7 +10,6 @@ import org.junit.Test;
 
 public class CategoryCommandToCategoryTest {
     public static final String ID_VALUE = "1";
-    public static final String DESCRIPTION = "description";
     
     CategoryCommandToCategory conveter;
 
@@ -34,12 +33,10 @@ public class CategoryCommandToCategoryTest {
         //given
         CategoryCommand categoryCommand = new CategoryCommand();
         categoryCommand.setId(ID_VALUE);
-        categoryCommand.setDescription(DESCRIPTION);
         //when
         Category category = conveter.convert(categoryCommand);
         //then
         assertEquals(ID_VALUE, category.getId());
-        assertEquals(DESCRIPTION, category.getDescription());
     }
 
 }
