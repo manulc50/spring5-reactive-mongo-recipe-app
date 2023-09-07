@@ -44,13 +44,13 @@ public class RecipeController {
     @GetMapping("recipe/new")
     public String newRecipe(Model model){
         model.addAttribute("recipe", Mono.just(new RecipeCommand()));
-        return "recipe/recipeform";
+        return "recipe/recipeForm";
     }
 
     @GetMapping("recipe/{id}/update")
     public String updateRecipe(@PathVariable String id, Model model){
         model.addAttribute("recipe", recipeService.findCommandById(id));
-        return "recipe/recipeform";
+        return "recipe/recipeForm";
     }
 
     // Parece ser que, usando WebFlux, no funciona correctamente la anotación @Valid junto con BindingResult
@@ -62,7 +62,7 @@ public class RecipeController {
         if(bindingResult.hasErrors()) {
         	if(log.isDebugEnabled())
 	            bindingResult.getAllErrors().forEach(objectError -> log.debug(objectError.toString()));
-            return Mono.just("recipe/recipeform");
+            return Mono.just("recipe/recipeForm");
         }
         return recipeService.saveRecipeCommand(command)
         		.map(savedCommand -> "redirect:/recipe/" + savedCommand.getId() + "/show");
