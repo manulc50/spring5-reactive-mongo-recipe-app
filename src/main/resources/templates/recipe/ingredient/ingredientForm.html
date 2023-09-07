@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Edit Ingredient</title>
+	
+	<!-- Bootstrap CDN(CSS) obtenido de su web official -->
+	<!-- Añadimos el atributo "href" de Thymeleaf para sobrescribir los estilos de Bootstrap del CDN por los estilos de Bootstrap del WebJar -->
+	<!-- De esta manera, si ejecuto o visualizo este HTML directamente sin Spring BooT, se usará el CSS del CDN. Sin embargo, si arrancamos esta aplicación Spring Boot, se usará Thymeleaf con el CSS del WebJar -->
+	<!-- Nota: Usar la misma versión de CDN y WebJar para evitar errores de integridad -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
+		  th:href="@{/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css}">
+
+	<!-- Para usar el JS de JQuery del WebJar -->
+	<script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
+
+	<!-- Bootstrap CDN(JS) obtenido de su web official -->
+	<!-- Añadimos el atributo "href" de Thymeleaf para sobrescribir el JS de Bootstrap del CDN por el JS de Bootstrap del WebJar -->
+	<!-- De esta manera, si ejecuto o visualizo este HTML directamente sin Spring BooT, se usará el JS del CDN.Sin embargo, si arrancamos esta aplicación Spring Boot, se usará Thymeleaf con el JS del WebJar -->
+	<!-- Nota: Usar la misma versión de CDN y WebJar para evitar errores de integridad -->
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+	        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"
+	        th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<div class="container-fluid" style="margin-top: 20px">
+	    <div class="row">
+	        <div class="col-md-6 col-md-offset-3">
+	            <!--/*@thymesVar id="ingredient" type="com.mlorenzo.spring5reactivemongorecipeapp.commands.IngredientCommand"*/-->
+	            <form th:object="${ingredient}" th:action="@{'/recipe/' + ${ingredient.recipeId} + '/ingredient'} " method="post">
+	                <input th:if="${ingredient.id}" type="hidden" th:field="*{id}"/>
+	                <input th:if="${ingredient.recipeId}" type="hidden" th:field="*{recipeId}"/>
+	                <div class="pannel-group">
+	                    <div class="panel panel-primary">
+	                        <div class="panel-heading">
+	                            <h1 class="panel-title">Edit Ingredient Information</h1>
+	                        </div>
+	                        <div class="panel-body">
+	
+	
+	                            <div class="row">
+	                                <div class="col-md-3 form-group">
+	                                    <label>Description:</label>
+	                                    <input type="text" class="form-control" th:field="*{description}"/>
+	                                </div>
+	
+	                                <div class="col-md-3 form-group">
+	                                    <label>Amount:</label>
+	                                    <input type="number" class="form-control" th:field="*{amount}"/>
+	                                </div>
+	
+	                                <div class="col-md-3 form-group">
+	                                    <label>UOM:</label>
+	                                    <select class="form-control" name="uom.id">
+	                                        <option th:each="uomEach : ${uomList}"
+	                                                th:value="${uomEach.id}"
+	                                                th:selected="${uomEach.id.equals(ingredient.uom.id)}"
+	                                                th:text="${uomEach.description}">Each</option>
+	                                    </select>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <button type="submit" class="btn btn-primary">Submit</button>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+	</div>
+</body>
+</html>
