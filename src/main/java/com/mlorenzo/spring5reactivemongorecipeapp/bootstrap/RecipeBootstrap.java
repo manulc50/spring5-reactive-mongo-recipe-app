@@ -49,7 +49,7 @@ public class RecipeBootstrap {
         cat3.setDescription("Mexican");
         Category cat4 = new Category();
         cat4.setDescription("Fast Food");
-        return categoryReactiveRepository.saveAll(List.of(cat1, cat2, cat3, cat4));
+        return categoryReactiveRepository.saveAll(Arrays.asList(cat1, cat2, cat3, cat4));
     }
 
     private Flux<UnitOfMeasure> loadUom(){
